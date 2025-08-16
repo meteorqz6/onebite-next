@@ -1,45 +1,47 @@
 // CSS Module
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import style from "./index.module.css";
 import SearchableLayout from "@/components/searchable-layout";
-import books from "@/mock/books.json";
 import BookItem from "@/components/book-item";
 import { InferGetServerSidePropsType } from "next";
+import fetchBooks from "@/lib/fetch-books";
+import fetchRandomBooks from "@/lib/fetch-random-books";
 
-export const getServerSideProps = () => {
+export const getServerSideProps = async () => {
   // 컴포넌트보다 먼저 실행돼서 컴포넌트에 필요한 데이터 불러오는 함수
   // 서버 측에서만 실행된다 (브라우저 X)
-  console.log("server side props");
-  const data = "hello";
+
+  // const allBooks = await fetchBooks();
+  // const recommendBooks = await fetchRandomBooks();
+
+  const [allBooks, recommendBooks] = await Promise.all([
+    fetchBooks(),
+    fetchRandomBooks(),
+  ]);
 
   return {
     props: {
-      data,
+      allBooks,
+      recommendBooks,
     },
   };
 };
 
 export default function Home({
-  data,
+  allBooks,
+  recommendBooks,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  // 서버에서 1번, 브라우저에서 1번 출력
-  console.log(data);
-
-  useEffect(() => {
-    console.log(window);
-  }, []);
-
   return (
     <div className={style.container}>
       <section>
         <h3>지금 추천하는 도서</h3>
-        {books.map((book) => (
+        {recommendBooks.map((book) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        {books.map((book) => (
+        {allBooks.map((book) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
