@@ -19,8 +19,7 @@ export default function Page({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (!book) return "문제가 발생했습니다.";
 
-  const { id, title, subTitle, description, author, publisher, coverImgUrl } =
-    book;
+  const { title, subTitle, description, author, publisher, coverImgUrl } = book;
 
   return (
     <div className={style.container}>
